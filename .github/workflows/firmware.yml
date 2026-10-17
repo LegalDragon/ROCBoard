@@ -1,0 +1,42 @@
+name: Firmware CI
+
+on:
+  push:
+    branches: [master, main]
+    paths: ['firmware/**']
+  pull_request:
+    paths: ['firmware/**']
+
+# NOTE: This workflow compiles and tests on the native platform only.
+# Hardware flashing (pio run -e esp32-s3-devkitc-1 --target upload) is NOT part of CI.
+# Flash manually using VS Code PlatformIO extension or: pio run -e esp32-s3-devkitc-1 -t upload
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Compile for native (no hardware required)
+        run: |
+          cd firmware
+          pio run -e native
+
+      - name: Run Unity tests on native platform
+        run: |
+          cd firmware
+          pio test -e native
+
+      - name: Compile for ESP32-S3 (check only, no flash)
+        run: |
+          cd firmware
+          pio run -e esp32-s3-devkitc-1

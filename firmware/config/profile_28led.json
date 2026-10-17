@@ -1,0 +1,12 @@
+{
+  "name": "28LED_TWO_CHAR",
+  "description": "Phase 3: 28 LEDs forming two 14-segment characters (e.g., two-digit score)",
+  "ledPin": 48,
+  "ledCount": 28,
+  "brightness": 80,
+  "phase": 3,
+  "characters": [
+    { "position": 0, "ledStart": 0,  "segmentCount": 14 },
+    { "position": 1, "ledStart": 14, "segmentCount": 14 }
+  ]
+}

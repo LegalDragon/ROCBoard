@@ -1,0 +1,8 @@
+{
+  "name": "1LED_TEST",
+  "description": "Phase 1: Single onboard WS2812B on GPIO48 (ESP32-S3-DevKitC-1 N8R8)",
+  "ledPin": 48,
+  "ledCount": 1,
+  "brightness": 50,
+  "phase": 1
+}

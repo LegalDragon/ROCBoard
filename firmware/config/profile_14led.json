@@ -1,0 +1,12 @@
+{
+  "name": "14LED_SINGLE_CHAR",
+  "description": "Phase 2: 14 LEDs forming one 14-segment alphanumeric character",
+  "ledPin": 48,
+  "ledCount": 14,
+  "brightness": 80,
+  "phase": 2,
+  "segments": {
+    "segmentOrder": ["a","b","c","d","e","f","g","h","i","j","k","l","m","dp"],
+    "indexStart": 0
+  }
+}

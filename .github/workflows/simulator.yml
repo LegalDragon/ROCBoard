@@ -1,0 +1,41 @@
+name: Simulator CI
+
+on:
+  push:
+    branches: [master, main]
+    paths: ['simulator/**']
+  pull_request:
+    paths: ['simulator/**']
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: simulator/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd simulator
+          npm ci
+
+      - name: Type check
+        run: |
+          cd simulator
+          npx tsc --noEmit
+
+      - name: Build
+        run: |
+          cd simulator
+          npm run build
+
+      - name: Run Vitest tests
+        run: |
+          cd simulator
+          npm test

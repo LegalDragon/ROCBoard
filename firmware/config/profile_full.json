@@ -1,0 +1,14 @@
+{
+  "name": "FULL_SCOREBOARD",
+  "description": "Phase 4+: Full ROCBoard — 20 alpha (14-seg) + 4 numeric (7-seg) = 308 LEDs",
+  "ledPin": 48,
+  "ledCount": 308,
+  "brightness": 80,
+  "phase": 4,
+  "layout": {
+    "teamAName": { "positions": [0,1,2,3,4,5,6,7,8,9],   "ledStart": 0,   "segmentCount": 14 },
+    "teamBName": { "positions": [10,11,12,13,14,15,16,17,18,19], "ledStart": 140, "segmentCount": 14 },
+    "scoreA":    { "positions": [20,21],                   "ledStart": 280, "segmentCount": 7  },
+    "scoreB":    { "positions": [22,23],                   "ledStart": 294, "segmentCount": 7  }
+  }
+}
