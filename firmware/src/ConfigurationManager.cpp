@@ -4,12 +4,12 @@
 // Use ESP32 NVS (Preferences library) to persist hardware profile + network settings.
 
 static const RocConfig DEFAULT_CONFIG = {
-    .ssid         = "ROCBoard",
-    .wifiPassword = "rocboard123",
-    .apName       = "ROCBoard-AP",
-    .ledCount     = 1,
-    .ledPin       = 48,
-    .brightness   = 50,
+    "ROCBoard",     // ssid
+    "rocboard123",  // wifiPassword
+    "ROCBoard-AP",  // apName
+    1,              // ledCount
+    48,             // ledPin
+    50,             // brightness
 };
 
 ConfigurationManager::ConfigurationManager()

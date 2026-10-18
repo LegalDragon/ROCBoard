@@ -21,6 +21,9 @@ public:
     // Set all pixels to black and push.
     void clear();
 
+    // Set global brightness (0-255).
+    void setBrightness(uint8_t b);
+
     // Returns the number of LEDs in the current profile.
     uint16_t ledCount() const;
 

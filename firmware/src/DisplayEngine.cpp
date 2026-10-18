@@ -1,7 +1,13 @@
 #include "DisplayEngine.h"
-// TODO Phase 2: Implement DisplayEngine
-// This module maps text content to LED pixel positions using Font14Segment masks
-// and forwards pixel data to LedDriver.
+#include "LedDriver.h"
+#include "LayoutMapper.h"
+#include "Font14Segment.h"
+
+#ifdef NATIVE_TEST
+// Provide definitions for the CRGB stubs declared in DisplayEngine.h
+const CRGB CRGB::Black = CRGB(0, 0, 0);
+const CRGB CRGB::White = CRGB(255, 255, 255);
+#endif
 
 DisplayEngine::DisplayEngine()
     : _driver(nullptr)
@@ -11,23 +17,55 @@ DisplayEngine::DisplayEngine()
 void DisplayEngine::init(LedDriver* driver) {
     _driver      = driver;
     _initialized = true;
-    // TODO Phase 2: initialize frame buffer, load layout from LayoutMapper
+}
+
+void DisplayEngine::setCharacter(uint8_t pos, char c, CRGB color) {
+    if (!_initialized || !_driver) return;
+
+    SegmentMask mask = Font14Seg::charToMask(c);
+
+    for (uint8_t seg = 0; seg < 14; seg++) {
+        uint16_t physIndex = LayoutMapper::getPhysicalIndex(pos, seg);
+        if (physIndex == INVALID_LED_INDEX) continue;
+
+        bool segOn = (mask & (1 << seg)) != 0;
+#ifndef NATIVE_TEST
+        CRGB pixColor = segOn ? color : CRGB::Black;
+        _driver->setPixel(physIndex,
+                          pixColor.r,
+                          pixColor.g,
+                          pixColor.b);
+#else
+        (void)segOn;
+        (void)physIndex;
+#endif
+    }
+    _driver->show();
 }
 
 void DisplayEngine::renderText(const char* text, uint8_t startPos) {
-    (void)text;
-    (void)startPos;
-    // TODO Phase 2: iterate characters, call Font14Seg::charToMask(), map to LED indices
+    if (!_initialized || !_driver || !text) return;
+    uint8_t pos = startPos;
+    while (*text) {
+#ifndef NATIVE_TEST
+        setCharacter(pos, *text, CRGB::White);
+#endif
+        ++text;
+        ++pos;
+    }
 }
 
 void DisplayEngine::renderChar(char c, uint8_t pos) {
+#ifndef NATIVE_TEST
+    setCharacter(pos, c, CRGB::White);
+#else
     (void)c;
     (void)pos;
-    // TODO Phase 2: single character render path
+#endif
 }
 
 void DisplayEngine::clear() {
     if (_driver) {
-        // TODO Phase 2: delegate to LedDriver::clear()
+        _driver->clear();
     }
 }

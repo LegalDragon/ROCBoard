@@ -1,5 +1,8 @@
+// SYNC: these tests are mirrored in simulator/test/font.test.ts — keep in sync
 #include <unity.h>
 #include "../../src/Font14Segment.h"
+// PlatformIO native tests do not auto-compile src/; include the implementation.
+#include "../../src/Font14Segment.cpp"
 
 using namespace Font14Seg;
 
@@ -47,6 +50,20 @@ void test_unknown_char_is_blank(void) {
     TEST_ASSERT_EQUAL(0, charToMask('\x01'));
 }
 
+// Phase 2: all A-Z return non-zero masks
+void test_all_az_nonzero(void) {
+    for (char c = 'A'; c <= 'Z'; c++) {
+        TEST_ASSERT_NOT_EQUAL_MESSAGE(0, charToMask(c), "Expected non-zero mask for A-Z");
+    }
+}
+
+// Phase 2: all 0-9 return non-zero masks
+void test_all_09_nonzero(void) {
+    for (char c = '0'; c <= '9'; c++) {
+        TEST_ASSERT_NOT_EQUAL_MESSAGE(0, charToMask(c), "Expected non-zero mask for 0-9");
+    }
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_A_segments);
@@ -54,5 +71,7 @@ int main(void) {
     RUN_TEST(test_space_is_blank);
     RUN_TEST(test_lowercase_mapped_to_uppercase);
     RUN_TEST(test_unknown_char_is_blank);
+    RUN_TEST(test_all_az_nonzero);
+    RUN_TEST(test_all_09_nonzero);
     return UNITY_END();
 }

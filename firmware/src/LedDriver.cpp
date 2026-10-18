@@ -25,6 +25,9 @@ void LedDriver::init(const HardwareProfile& profile) {
     // template, so we branch on the known pins in our profiles.
     // Add cases here when new hardware profiles are introduced.
     switch (profile.ledPin) {
+        case 1:
+            FastLED.addLeds<WS2812B, 1, GRB>(_leds, _ledCount);
+            break;
         case 48:
             FastLED.addLeds<WS2812B, 48, GRB>(_leds, _ledCount);
             break;
@@ -61,6 +64,14 @@ void LedDriver::clear() {
         _leds[i] = CRGB::Black;
     }
     FastLED.show();
+#endif
+}
+
+void LedDriver::setBrightness(uint8_t b) {
+#ifndef NATIVE_TEST
+    FastLED.setBrightness(b);
+#else
+    (void)b;
 #endif
 }
 

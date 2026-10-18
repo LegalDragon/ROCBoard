@@ -1,4 +1,4 @@
-// SHARED: keep in sync with firmware/test/test_font/test_font.cpp
+// SYNC: these tests mirror test/test_font/test_font.cpp — keep in sync
 import { describe, it, expect } from 'vitest';
 import {
   charToMask,
@@ -44,5 +44,21 @@ describe('Font14Segment', () => {
 
   it('unrecognized characters return 0', () => {
     expect(charToMask('\x01')).toBe(0);
+  });
+
+  // Phase 2: all A-Z return non-zero masks
+  it('all A-Z chars return non-zero masks', () => {
+    for (let i = 0; i < 26; i++) {
+      const c = String.fromCharCode(65 + i); // 'A' to 'Z'
+      expect(charToMask(c)).toBeGreaterThan(0);
+    }
+  });
+
+  // Phase 2: all 0-9 return non-zero masks
+  it('all 0-9 digits return non-zero masks', () => {
+    for (let i = 0; i <= 9; i++) {
+      const c = String(i);
+      expect(charToMask(c)).toBeGreaterThan(0);
+    }
   });
 });

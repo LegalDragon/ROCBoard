@@ -61,6 +61,18 @@ ROCBoard/
 
 ---
 
+## Phase 2 Wiring: Single 14-Segment Character
+
+ESP32-S3 GPIO1 ──[470Ω]──► Data-In of WS2812B strip (LED 0)
+ESP32-S3 GND ─────────────► GND of LED strip
+5V supply ────────────────► 5V of LED strip
+
+(For < 14 LEDs at low brightness: ESP32-S3 USB can power; for 14 LEDs at full brightness, use external 5V 1A)
+
+**GPIO note:** GPIO1 is the first safe user GPIO on DevKitC-1 N8R8. Avoid GPIO0 (boot mode), GPIO46 (strapping pin), GPIO43/44 (UART0).
+
+---
+
 ## Simulator
 
 No hardware needed — run the web simulator to see the scoreboard rendering:
@@ -82,7 +94,7 @@ The simulator uses the same segment bit definitions as the firmware (`font14segm
 | Phase | Status     | Description |
 |-------|------------|-------------|
 | 1     | ✅ Complete | Single LED blink, project scaffold, simulator skeleton |
-| 2     | 🔲 Planned  | DisplayEngine: 14-segment single character render |
+| 2     | ✅ Complete | DisplayEngine: 14-segment single character render |
 | 3     | 🔲 Planned  | LayoutMapper: full 24-char scoreboard layout |
 | 4     | 🔲 Planned  | CommandProcessor: JSON commands over serial |
 | 5     | 🔲 Planned  | TransportManager: Wi-Fi REST API + OTA updates |

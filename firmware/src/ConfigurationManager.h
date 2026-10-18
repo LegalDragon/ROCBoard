@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 // ConfigurationManager — loads and persists hardware + network configuration.
 // Phase 5+ implementation.
 
