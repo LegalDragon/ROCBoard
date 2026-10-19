@@ -1,6 +1,5 @@
 #include "Diagnostics.h"
-// TODO Phase 2: Implement Diagnostics
-// Provides POST, logging, and health monitoring for the ROCBoard firmware.
+#include "LedDriver.h"
 
 #ifndef NATIVE_TEST
 #include <Arduino.h>
@@ -11,8 +10,37 @@ Diagnostics::Diagnostics()
 {}
 
 DiagResult Diagnostics::runPost(LedDriver* driver) {
-    (void)driver;
-    // TODO Phase 2: cycle each LED through red/green/blue at low brightness
+    if (!driver) return DiagResult::ERROR;
+
+    log("INFO", "POST starting — cycling all LEDs R/G/B");
+
+#ifndef NATIVE_TEST
+    uint16_t count = driver->ledCount();
+    if (count == 0) return DiagResult::WARN;
+
+    // Flash all LEDs red → green → blue → off at low brightness
+    const uint8_t LEVEL = 30;
+    const unsigned long STEP_MS = 150;
+
+    driver->setBrightness(LEVEL);
+
+    uint8_t colors[3][3] = {
+        {LEVEL, 0, 0},  // red
+        {0, LEVEL, 0},  // green
+        {0, 0, LEVEL},  // blue
+    };
+
+    for (int ci = 0; ci < 3; ci++) {
+        for (uint16_t i = 0; i < count; i++) {
+            driver->setPixel(i, colors[ci][0], colors[ci][1], colors[ci][2]);
+        }
+        driver->show();
+        delay(STEP_MS); // Only used in POST — blocking is acceptable here
+    }
+    driver->clear();
+    log("INFO", "POST complete — OK");
+#endif
+
     return DiagResult::OK;
 }
 
@@ -32,10 +60,10 @@ void Diagnostics::reportStatus() {
 #ifndef NATIVE_TEST
     Serial.print("[DIAG] Uptime: ");
     Serial.print(millis() / 1000);
-    Serial.println("s");
-    Serial.print("[DIAG] Errors: ");
+    Serial.print("s | FreeHeap: ");
+    Serial.print(ESP.getFreeHeap());
+    Serial.print(" | Errors: ");
     Serial.println(_errorCount);
-    // TODO Phase 2: report heap free (ESP.getFreeHeap()), LED count, etc.
 #endif
 }
 

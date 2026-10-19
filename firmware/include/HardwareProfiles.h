@@ -39,10 +39,11 @@ static constexpr HardwareProfile PROFILE_28LED = {
     .name     = "28LED_TWO_CHAR"
 };
 
-// Phase 4+: Full scoreboard — 20 alpha (14-seg) + 4 numeric (7-seg) characters
-// 20 chars × 14 segments + 4 chars × 7 segments = 308 LEDs
+// Phase 3+: Full scoreboard — 24 characters all using 14-segment displays
+// 24 chars × 14 segments = 336 LEDs
+// GPIO1 used for single-chain prototyping; final board will split into multiple chains.
 static constexpr HardwareProfile PROFILE_FULL = {
-    .ledPin   = 48,
-    .ledCount = 308,
+    .ledPin   = 1,
+    .ledCount = 336,
     .name     = "FULL_SCOREBOARD"
 };

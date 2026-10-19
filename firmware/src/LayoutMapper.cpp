@@ -1,7 +1,21 @@
 #include "LayoutMapper.h"
 
-// LayoutMapper — Phase 2 implementation: single 14-segment character.
-// Phase 3 will add full 24-character layout computation.
+// LayoutMapper — maps logical (charPos, segment) → physical LED index.
+//
+// Physical layout: all characters use 14 segments.
+// LED index formula: charPos * 14 + segment
+//
+// Full board positions (24 chars × 14 segs = 336 LEDs):
+//   Pos  0– 9: Top team alpha name    (LEDs   0–139)
+//   Pos 10–19: Bottom team alpha name (LEDs 140–279)
+//   Pos 20–21: Top team score         (LEDs 280–307)
+//   Pos 22–23: Bottom team score      (LEDs 308–335)
+//
+// Segment order (0-13):
+//   0=a(top), 1=b(upper-right), 2=c(lower-right), 3=d(bottom),
+//   4=e(lower-left), 5=f(upper-left), 6=g(middle-left), 7=h(middle-right),
+//   8=i(center-vertical-top), 9=j(diag TL→C), 10=k(diag TR→C),
+//   11=l(center-vertical-bottom), 12=m(diag C→BR), 13=dp(decimal)
 
 LayoutMapper::LayoutMapper()
     : _totalLeds(0)
@@ -11,30 +25,33 @@ LayoutMapper::LayoutMapper()
 void LayoutMapper::loadForLedCount(uint16_t totalLeds) {
     _totalLeds = totalLeds;
     _loaded    = true;
-    // TODO Phase 3: compute CharLayout table for each of the 24 positions
 }
 
 CharLayout LayoutMapper::getCharLayout(uint8_t charPos) const {
-    (void)charPos;
-    // TODO Phase 3: return computed layout for charPos
-    return {0, 14};
+    return { static_cast<uint16_t>(charPos * 14), 14 };
 }
 
 uint16_t LayoutMapper::getPhysicalIndex(uint8_t charPos, uint8_t segment) {
-    // Phase 2 (PROFILE_14_LED): single character at position 0.
-    // Segment order: 0=a, 1=b, 2=c, 3=d, 4=e, 5=f, 6=g, 7=h,
-    //                8=i, 9=j, 10=k, 11=l, 12=m, 13=dp
-    // Each segment maps directly to the LED at the same index.
+    if (segment >= 14) return INVALID_LED_INDEX;
 
 #if defined(HARDWARE_PROFILE) && (HARDWARE_PROFILE == PROFILE_14_LED)
+    // Phase 2: single character at position 0 only
     if (charPos != 0) return INVALID_LED_INDEX;
-    if (segment >= 14) return INVALID_LED_INDEX;
     return static_cast<uint16_t>(segment);
+
+#elif defined(HARDWARE_PROFILE) && (HARDWARE_PROFILE == PROFILE_28_LED)
+    // Phase 3a: two characters at positions 0-1
+    if (charPos >= 2) return INVALID_LED_INDEX;
+    return static_cast<uint16_t>(charPos * 14 + segment);
+
+#elif defined(HARDWARE_PROFILE) && (HARDWARE_PROFILE == PROFILE_FULL_ID)
+    // Phase 3+: full 24-character scoreboard (positions 0-23)
+    if (charPos >= 24) return INVALID_LED_INDEX;
+    return static_cast<uint16_t>(charPos * 14 + segment);
+
 #else
-    // Other profiles not yet implemented at the physical-index level.
-    // Phase 3 will map charPos * 14 + segment with proper stride.
-    (void)charPos;
-    (void)segment;
-    return INVALID_LED_INDEX;
+    // Default (including native test builds): full mapping
+    if (charPos >= 24) return INVALID_LED_INDEX;
+    return static_cast<uint16_t>(charPos * 14 + segment);
 #endif
 }

@@ -1,22 +1,12 @@
 #pragma once
+#include <stdint.h>
 // TransportManager — manages all communication transports.
-// Phase 5+ implementation.
+// Phase 4: USB serial (newline-delimited JSON).
+// Phase 5+: Wi-Fi REST, BLE pucks, OTA, heartbeat.
 //
-// Supported transports (future phases):
-//   - Serial (Phase 4, for testing)
-//   - Wi-Fi / HTTP REST (Phase 5)
-//   - Bluetooth Low Energy (BLE) pucks (Phase 6)
-//   - OTA update manager (Phase 5)
+// Future interface stubs are declared in firmware/src/interfaces/.
 
 class CommandProcessor;
-
-// Future interfaces — not yet implemented
-// Future: IWifiTransport
-// Future: IBluetoothTransport (BLE pucks)
-// Future: IRestApiTransport
-// Future: IOtaManager
-// Future: IHeartbeatService
-// Future: IMirrorOutput (mirror display to secondary devices)
 
 class TransportManager {
 public:
@@ -26,14 +16,12 @@ public:
 
     // Poll all active transports for incoming data.
     // Call from loop(). Non-blocking.
-    // TODO Phase 5: implement transport polling
     void poll();
 
     // Enable/disable individual transports.
-    // TODO Phase 5: implement transport enable/disable
     void enableSerial(bool enable);
-    void enableWifi(bool enable);
-    void enableBluetooth(bool enable);
+    void enableWifi(bool enable);       // Phase 5+
+    void enableBluetooth(bool enable);  // Phase 6+
 
 private:
     CommandProcessor* _processor;
@@ -41,5 +29,11 @@ private:
     bool _serialEnabled;
     bool _wifiEnabled;
     bool _bluetoothEnabled;
-    // TODO Phase 5: add transport objects
+
+    // Serial framing buffer — accumulate chars until '\n'
+    static constexpr uint16_t SERIAL_BUF_SIZE = 512;
+    char     _serialBuf[SERIAL_BUF_SIZE];
+    uint16_t _serialLen;
+
+    void _pollSerial();
 };

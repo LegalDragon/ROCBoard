@@ -6,11 +6,17 @@ interface Props {
 }
 
 const EXAMPLE_COMMANDS = [
-  '{"cmd":"SET_SCORE","teamA":8,"teamB":6}',
-  '{"cmd":"SET_NAME","team":"A","name":"JOHN"}',
-  '{"cmd":"SET_NAME","team":"B","name":"DAVID"}',
-  '{"cmd":"PING"}',
-  '{"cmd":"CLEAR"}',
+  {
+    label: 'set_display',
+    json: '{"cmd":"set_display","top":{"players":["JOHN","MIKE"],"score":8,"color":"#FF4400"},"bottom":{"players":["DAVID","PETER"],"score":6,"color":"#0066FF"}}',
+  },
+  { label: 'swap_teams', json: '{"cmd":"swap_teams"}' },
+  { label: 'brightness', json: '{"cmd":"brightness","value":180}' },
+  { label: 'self_test',  json: '{"cmd":"self_test"}' },
+  { label: 'SET_SCORE',  json: '{"cmd":"SET_SCORE","teamA":11,"teamB":9}' },
+  { label: 'SET_NAME',   json: '{"cmd":"SET_NAME","team":"A","name":"SYNTHIA"}' },
+  { label: 'ping',       json: '{"cmd":"ping"}' },
+  { label: 'clear',      json: '{"cmd":"clear"}' },
 ];
 
 export const CommandConsole: React.FC<Props> = ({ onCommand, lastResponse }) => {
@@ -23,10 +29,6 @@ export const CommandConsole: React.FC<Props> = ({ onCommand, lastResponse }) => 
     setInput('');
   };
 
-  const handleExample = (cmd: string) => {
-    setInput(cmd);
-  };
-
   return (
     <div
       style={{
@@ -36,33 +38,34 @@ export const CommandConsole: React.FC<Props> = ({ onCommand, lastResponse }) => 
         padding: 16,
         fontFamily: 'monospace',
         fontSize: 13,
-        minWidth: 480,
+        minWidth: 520,
+        maxWidth: 680,
       }}
     >
       <div style={{ color: '#888', marginBottom: 8 }}>
         COMMAND CONSOLE
         <span style={{ color: '#444', marginLeft: 8, fontSize: 11 }}>
-          (Phase 4: not wired to hardware yet)
+          (JSON over serial — same format as hardware)
         </span>
       </div>
 
       {/* Example buttons */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
-        {EXAMPLE_COMMANDS.map((cmd) => (
+        {EXAMPLE_COMMANDS.map((ex) => (
           <button
-            key={cmd}
-            onClick={() => handleExample(cmd)}
+            key={ex.label}
+            onClick={() => setInput(ex.json)}
             style={{
               background: '#1a1a1a',
               color: '#AAA',
               border: '1px solid #444',
               borderRadius: 3,
-              padding: '2px 6px',
+              padding: '2px 8px',
               cursor: 'pointer',
               fontSize: 11,
             }}
           >
-            {JSON.parse(cmd).cmd}
+            {ex.label}
           </button>
         ))}
       </div>
@@ -75,7 +78,7 @@ export const CommandConsole: React.FC<Props> = ({ onCommand, lastResponse }) => 
           if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSend();
         }}
         rows={3}
-        placeholder='{"cmd":"PING"}'
+        placeholder='{"cmd":"ping"}'
         style={{
           width: '100%',
           background: '#111',
@@ -84,7 +87,7 @@ export const CommandConsole: React.FC<Props> = ({ onCommand, lastResponse }) => 
           borderRadius: 4,
           padding: 8,
           fontFamily: 'monospace',
-          fontSize: 13,
+          fontSize: 12,
           resize: 'vertical',
           boxSizing: 'border-box',
         }}
@@ -115,10 +118,10 @@ export const CommandConsole: React.FC<Props> = ({ onCommand, lastResponse }) => 
           style={{
             marginTop: 10,
             padding: 8,
-            background: '#0a1a0a',
-            border: '1px solid #2a4a2a',
+            background: lastResponse.startsWith('✗') ? '#1a0a0a' : '#0a1a0a',
+            border: `1px solid ${lastResponse.startsWith('✗') ? '#4a2a2a' : '#2a4a2a'}`,
             borderRadius: 4,
-            color: '#7CFC00',
+            color: lastResponse.startsWith('✗') ? '#FF6666' : '#7CFC00',
             fontSize: 12,
           }}
         >
